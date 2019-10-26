@@ -65,44 +65,44 @@ let physicalStructProvider = ([initialNodes, initialContainers]) => {
     let root = [];
 
     let addContainer = (container) => {
-            var cloned = Object.assign({}, container);
-            let NodeID = cloned.NodeID;
-            _.find(root, (cluster) => {
-                var node = _.find(cluster.children, { ID: NodeID });
-                if (!node) return;
-                var dt = new Date(cloned.UpdatedAt);
-                var color = stringToColor(cloned.ServiceID);
-                let serviceName = cloned.ServiceName;
-                let imageNameRegex = /([^/]+?)(\:([^/]+))?$/;
-                let imageNameMatches = imageNameRegex.exec(cloned.Spec.ContainerSpec.Image);
-                let tagName = imageNameMatches[3];
-                let dateStamp = dt.getDate() + "/" + (dt.getMonth() + 1) + " " + dt.getHours() + ":" + padStart(dt.getMinutes().toString(), 2, "0");
-                let startState = cloned.Status.State;
+        var cloned = Object.assign({}, container);
+        let NodeID = cloned.NodeID;
+        _.find(root, (cluster) => {
+            var node = _.find(cluster.children, { ID: NodeID });
+            if (!node) return;
+            var dt = new Date(cloned.UpdatedAt);
+            var color = stringToColor(cloned.ServiceID);
+            let serviceName = cloned.ServiceName;
+            let imageNameRegex = /([^/]+?)(\:([^/]+))?$/;
+            let imageNameMatches = imageNameRegex.exec(cloned.Spec.ContainerSpec.Image);
+            let tagName = imageNameMatches[3];
+            let dateStamp = dt.getDate() + "/" + (dt.getMonth() + 1) + " " + dt.getHours() + ":" + padStart(dt.getMinutes().toString(), 2, "0");
+            let startState = cloned.Status.State;
 
+            console.log(node);
+            console.log(cloned);
 
+            let imageTag = "<div style='height: 100%; padding: 5px 5px 5px 5px; border: 2px solid " + color + "'>" +
+                "<span class='contname' style='color: white; font-weight: bold;font-size: 12px'>" + serviceName + "</span>" +
+                "<br/> image : " + imageNameMatches[0] +
+                "<br/> tag : " + (tagName ? tagName : "latest") +
+                "<br/>" + (cloned.Spec.ContainerSpec.Args ? " cmd : " + cloned.Spec.ContainerSpec.Args + "<br/>" : "") +
+                " updated : " + dateStamp +
+                "<br/>" + (cloned.Status.ContainerStatus ? cloned.Status.ContainerStatus.ContainerID : "null") +
+                "<br/> state : " + startState +
+                "</div>";
 
+            if (node.Spec.Role == 'manager') {
+                let containerlink = window.location.href + "apis/containers/" + cloned.Status.ContainerStatus.ContainerID + "/json";
+                cloned.link = containerlink;
+            }
+            cloned.tag = imageTag;
+            cloned.state = startState;
 
-                let imageTag = "<div style='height: 100%; padding: 5px 5px 5px 5px; border: 2px solid " + color + "'>" +
-                    "<span class='contname' style='color: white; font-weight: bold;font-size: 12px'>" + serviceName + "</span>" +
-                    "<br/> image : " + imageNameMatches[0] +
-                    "<br/> tag : " + (tagName ? tagName : "latest") +
-                    "<br/>" + (cloned.Spec.ContainerSpec.Args ? " cmd : " + cloned.Spec.ContainerSpec.Args + "<br/>" : "") +
-                    " updated : " + dateStamp +
-                    "<br/>" + (cloned.Status.ContainerStatus? cloned.Status.ContainerStatus.ContainerID : "null") +
-                    "<br/> state : " + startState +
-                    "</div>";
-
-                if (node.Spec.Role == 'manager') {
-                    let containerlink = window.location.href + "apis/containers/" + cloned.Status.ContainerStatus.ContainerID + "/json";
-                    cloned.link = containerlink;
-                }
-                cloned.tag = imageTag;
-                cloned.state = startState;
-
-                node.children.push(cloned);
-                return true;
-            });
-        },
+            node.children.push(cloned);
+            return true;
+        });
+    },
 
         updateContainer = (container, services) => {
             let { uuid, node } = container;
@@ -207,9 +207,9 @@ let physicalStructProvider = ([initialNodes, initialContainers]) => {
 
             for (let container of containers) {
                 let contNodeId = container.NodeID;
-                let service = _.find(services, function(o) { return o.ID == container.ServiceID; });
-                
-		container.ServiceName = service? service.Spec.Name : "null";
+                let service = _.find(services, function (o) { return o.ID == container.ServiceID; });
+
+                container.ServiceName = service ? service.Spec.Name : "null";
                 for (var i = 0, iLen = nodes.length; i < iLen; i++) {
                     if (nodes[i].ID == contNodeId) {
                         addContainer(container);
@@ -247,10 +247,10 @@ class DataProvider extends EventEmitter {
         STARTED = 1;
         //console.log(STARTED);
         var clusterInit = Promise.all([
-                getAllNodes(),
-                getAllTasks(),
-                getAllServices()
-            ])
+            getAllNodes(),
+            getAllTasks(),
+            getAllServices()
+        ])
             .then((resources) => {
                 _.remove(resources[1], (nc) => nc.state === 'Empty cluster' || nc.state === 'Terminated');
                 return resources;
@@ -270,10 +270,10 @@ class DataProvider extends EventEmitter {
 
         // console.log(STARTED);
         var clusterInit = Promise.all([
-                getAllNodes(),
-                getAllTasks(),
-                getAllServices()
-            ])
+            getAllNodes(),
+            getAllTasks(),
+            getAllServices()
+        ])
             .then((resources) => {
                 _.remove(resources[1], (nc) => nc.state === 'Empty cluster' || nc.state === 'Terminated');
                 return resources;
