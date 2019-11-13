@@ -79,7 +79,7 @@ let physicalStructProvider = ([initialNodes, initialContainers]) => {
             let dateStamp = dt.getDate() + "/" + (dt.getMonth() + 1) + " " + dt.getHours() + ":" + padStart(dt.getMinutes().toString(), 2, "0");
             let startState = cloned.Status.State;
 
-            let numGpus = cloned.GenericResources.filter(resource => resource.kind = "gpu").length || 0;
+            let numGpus = cloned.GenericResources ? (cloned.GenericResources.filter(resource => resource.kind = "gpu").length || 0) : 0;
 
             let imageTag = "<div style='height: 100%; padding: 5px 5px 5px 5px; border: 2px solid " + color + "'>" +
                 "<span class='contname' style='color: white; font-weight: bold;font-size: 12px'>" + serviceName + "</span>" +
